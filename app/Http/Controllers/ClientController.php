@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Client;
+use App\Binnacle;
 use Illuminate\Http\Request;
 
 class ClientController extends Controller
@@ -14,7 +15,9 @@ class ClientController extends Controller
      */
     public function index()
     {
-        //
+        return view('clients.index', [
+            'results' => Client::paginate(15)
+        ]);
     }
 
     /**
@@ -24,7 +27,7 @@ class ClientController extends Controller
      */
     public function create()
     {
-        //
+        return view('clients.create');
     }
 
     /**
@@ -35,7 +38,18 @@ class ClientController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $client = Client::create(
+            $request->only('quantity', 'operation_type_id', 'product_id')
+        );
+        Binnacle::create([
+            'ip' => request()->ip(),
+            'date'=> now(),
+            'accion'=>$client,
+            'user_id'=>auth()->user()->id
+        ]);
+        session()->flash('message', 'Guardado Exitosamente');
+
+        return redirect()->route('clients.index');
     }
 
     /**
@@ -46,7 +60,9 @@ class ClientController extends Controller
      */
     public function show(Client $client)
     {
-        //
+        return view('clients.show', [
+            'client' => $client
+        ]);
     }
 
     /**
@@ -57,7 +73,9 @@ class ClientController extends Controller
      */
     public function edit(Client $client)
     {
-        //
+        return view('clients.edit', [
+            'client' => $client
+        ]);
     }
 
     /**
@@ -69,7 +87,21 @@ class ClientController extends Controller
      */
     public function update(Request $request, Client $client)
     {
-        //
+        $client->fill(
+            $request->only('quantity', 'operation_type_id', 'product_id')
+        )->save();
+
+        Binnacle::create([
+            'ip' => request()->ip(),
+            'date'=> now(),
+            'accion'=>$client,
+            'user_id'=>auth()->user()->id
+        ]);
+        
+
+        session()->flash('message', 'Actualizado Exitosamente');
+
+        return redirect()->route('products.index');
     }
 
     /**
@@ -80,6 +112,16 @@ class ClientController extends Controller
      */
     public function destroy(Client $client)
     {
-        //
+        $client->delete();
+
+        Binnacle::create([
+            'ip' => request()->ip(),
+            'date'=> now(),
+            'accion'=>$client,
+            'user_id'=>auth()->user()->id
+        ]);
+        
+        session()->flash('message', 'Eliminado Exitosamente');
+        return redirect()->route('products.index');
     }
 }

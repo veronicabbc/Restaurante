@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Product;
+use App\Binnacle;
 use Illuminate\Http\Request;
 use App\Http\Requests\CreateProductRequest;
+use App\Http\Requests\UpdateProductRequest;
 
 class ProductController extends Controller
 {
@@ -38,9 +40,15 @@ class ProductController extends Controller
      */
     public function store(CreateProductRequest $request)
     {
-        Product::create(
+        $product = Product::create(
             $request->only('name','description','amount')
         );
+        Binnacle::create([
+            'ip' => request()->ip(),
+            'date'=> now(),
+            'accion'=>$product,
+            'user_id'=>auth()->user()->id
+        ]);
         session()->flash('message', 'Guardado Exitosamente');
 
         return redirect()->route('products.index');
@@ -79,12 +87,19 @@ class ProductController extends Controller
      * @param  \App\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
+    public function update(UpdateProductRequest $request, Product $product)
     {        
         $product->fill(
             $request->only('name','description','amount')
         );
         $product->save();
+        
+        Binnacle::create([
+            'ip' => request()->ip(),
+            'date'=> now(),
+            'accion'=>$product,
+            'user_id'=>auth()->user()->id
+        ]);
         session()->flash('message', 'Actualizado Exitosamente');
 
         return redirect()->route('products.index');
@@ -99,6 +114,13 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         $product->delete();
+        
+        Binnacle::create([
+            'ip' => request()->ip(),
+            'date'=> now(),
+            'accion'=>$product,
+            'user_id'=>auth()->user()->id
+        ]);
         session()->flash('message', 'Eliminado Exitosamente');
         return redirect()->route('products.index');
     }

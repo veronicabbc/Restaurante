@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Product;
+use App\Binnacle;
 use App\Inventory;
+use App\OperationType;
 use Illuminate\Http\Request;
 
 class InventoryController extends Controller
@@ -14,7 +17,9 @@ class InventoryController extends Controller
      */
     public function index()
     {
-        //
+        return view('inventory.index', [
+            'results' => Inventory::orderby('updated_at', 'desc')->paginate(15)
+        ]);
     }
 
     /**
@@ -24,7 +29,10 @@ class InventoryController extends Controller
      */
     public function create()
     {
-        //
+        return view('inventory.create', [
+            'operations' => OperationType::all(),
+            'products' => Product::all()
+        ]);
     }
 
     /**
@@ -35,7 +43,19 @@ class InventoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $inventory = Inventory::create(
+            $request->only('quantity', 'operation_type_id', 'product_id')
+        );
+        Binnacle::create([
+            'ip' => request()->ip(),
+            'date'=> now(),
+            'accion'=>$inventory,
+            'user_id'=>auth()->user()->id
+        ]);
+        
+        session()->flash('message', 'Guardado Exitosamente');
+
+        return redirect()->route('inventory.index');
     }
 
     /**
@@ -46,7 +66,9 @@ class InventoryController extends Controller
      */
     public function show(Inventory $inventory)
     {
-        //
+        return view('inventory.show', [
+            'inventory' => $inventory
+        ]);
     }
 
     /**
@@ -57,7 +79,11 @@ class InventoryController extends Controller
      */
     public function edit(Inventory $inventory)
     {
-        //
+        return view('inventory.edit', [
+            'inventory' => $inventory,
+            'operations' => OperationType::all(),
+            'products' => Product::all()
+        ]);
     }
 
     /**
@@ -69,7 +95,20 @@ class InventoryController extends Controller
      */
     public function update(Request $request, Inventory $inventory)
     {
-        //
+        $inventory->fill(
+            $request->only('quantity', 'operation_type_id', 'product_id')
+        )->save();
+
+        Binnacle::create([
+            'ip' => request()->ip(),
+            'date'=> now(),
+            'accion'=>$inventory,
+            'user_id'=>auth()->user()->id
+        ]);
+        
+        session()->flash('message', 'Actualizado Exitosamente');
+
+        return redirect()->route('inventory.index');
     }
 
     /**
@@ -80,6 +119,15 @@ class InventoryController extends Controller
      */
     public function destroy(Inventory $inventory)
     {
-        //
+        $inventory->delete();
+        Binnacle::create([
+            'ip' => request()->ip(),
+            'date'=> now(),
+            'accion'=>$inventory,
+            'user_id'=>auth()->user()->id
+        ]);
+        
+        session()->flash('message', 'Eliminado Exitosamente');
+        return redirect()->route('inventory.index');
     }
 }

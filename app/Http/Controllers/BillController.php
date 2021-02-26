@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Bill;
+use App\Binnacle;
 use Illuminate\Http\Request;
 
 class BillController extends Controller
@@ -35,7 +36,14 @@ class BillController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $bill = null;
+        Binnacle::create([
+            'ip' => request()->ip(),
+            'date'=> now(),
+            'accion'=>$bill,
+            'user_id'=>auth()->user()->id
+        ]);
+        
     }
 
     /**
@@ -69,7 +77,12 @@ class BillController extends Controller
      */
     public function update(Request $request, Bill $bill)
     {
-        //
+        Binnacle::create([
+            'ip' => request()->ip(),
+            'date'=> now(),
+            'accion'=>$bill,
+            'user_id'=>auth()->user()->id
+        ]);
     }
 
     /**
@@ -80,6 +93,11 @@ class BillController extends Controller
      */
     public function destroy(Bill $bill)
     {
-        //
+        Binnacle::create([
+            'ip' => request()->ip(),
+            'date'=> now(),
+            'accion'=>$bill,
+            'user_id'=>auth()->user()->id
+        ]);
     }
 }

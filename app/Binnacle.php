@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class Binnacle extends Model
@@ -11,7 +12,7 @@ class Binnacle extends Model
      *
      * @var array
      */
-    protected $table = 'binacles';
+    protected $table = 'binnacles';
 
     /**
      * The attributes that are mass assignable.
@@ -23,9 +24,23 @@ class Binnacle extends Model
         'ip', 'date', 'accion', 'user_id'
     ];
 
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = ['created_at', 'updated_at'];
+
+    public function getDateAttribute($value)
+    {
+        return Carbon::createFromFormat(
+            'Y-m-d H:i:s',
+            Carbon::parse($value)->toDateTimeString()
+        )->format('d-m-Y h:i A');
+    }
+
     public function user()
     {
-
         return $this->belongsTo(User::class);
     }
 }

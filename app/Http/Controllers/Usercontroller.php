@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Binnacle;
 use App\Role;
 use App\User;
 use Illuminate\Http\Request;
@@ -42,12 +43,23 @@ class UserController extends Controller
     public function store(UserCreateRequest $request)
     {
         //dd( $request->all());
-        User::create(
+        $user = User::create(
             $request->only('name', 'username', 'password', 'role_id')
         );
-        session()->flash('message', 'Guardado Exitosamente');
 
-        return redirect()->route('users.index');
+        Binnacle::create([
+            'ip' => request()->ip(),
+            'date'=> now(),
+            'accion'=>$user,
+            'user_id'=>auth()->user()->id
+        ]);
+
+        // session()->flash('message', 'Usuario '.$request->user.' Guardado Exitosamente');
+
+        return redirect()
+        ->route('users.edit',$user->id)
+        ->with('info', 'registro creado con exito');
+        // return redirect()->route('users.index');// donde esta es rout?
     }
 
     /**
@@ -92,7 +104,15 @@ class UserController extends Controller
             $request->only('name', 'username', 'role_id')
         );
         $user->save();
-        session()->flash('message', 'Actualizado Exitosamente');
+       
+        Binnacle::create([
+            'ip' => request()->ip(),
+            'date'=> now(),
+            'accion'=>$user,
+            'user_id'=>auth()->user()->id
+        ]);
+
+        session()->flash('message', 'Actualizado Exitosamente');        
 
         return redirect()->route('users.index');
     }
@@ -107,6 +127,14 @@ class UserController extends Controller
     {        
         $user = User::find($id);
         $user->delete();
+        
+        Binnacle::create([
+            'ip' => request()->ip(),
+            'date'=> now(),
+            'accion'=>$user,
+            'user_id'=>auth()->user()->id
+        ]);
+
         session()->flash('message', 'Eliminado Exitosamente');
         return redirect()->route('users.index');
     }

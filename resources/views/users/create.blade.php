@@ -34,7 +34,7 @@
                     <option value="{{ $item->id }}">{{ $item->role}}</option>
                 @endforeach
             </select>
-            @error('password') <span class="text-red-500">{{ $message }}</span> @enderror
+            @error('role_id') <span class="text-red-500">{{ $message }}</span> @enderror
         </div>
         <button type="submit" class="btn btn-primary">Crear</button>
         <a href='{{ route('users.index') }}' class="btn btn-warning">Volver</a>

@@ -17,7 +17,7 @@ class CreateProductsTable extends Migration
             $table->id();
             $table->string('name')->default('text');
             $table->text('description')->default('text');
-            $table->float('amount')->default(0.00);
+            $table->decimal('amount', 15,2)->default(0.00);
             $table->timestamps();
         });
     }

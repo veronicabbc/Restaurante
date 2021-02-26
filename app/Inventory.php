@@ -28,12 +28,12 @@ class Inventory extends Model
 
   public function operation()
   {
-    return $this->belongsTo(OperationType::class);
+    return $this->belongsTo(OperationType::class, 'operation_type_id', 'id');
   }
 
-  public function products()
+  public function product()
   {
-    return $this->belongsToMany(Product::class);
+    return $this->belongsTo(Product::class, 'product_id', 'id');
   }
 
   public function billings()

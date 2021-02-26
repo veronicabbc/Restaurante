@@ -23,7 +23,7 @@
         <div class="form-group">
             <label for="amount">Monto</label>
             <input type="number" class="form-control" id="amount" name="amount" aria-describedby="amount"
-                placeholder="Ingrese el monto">
+                placeholder="Ingrese el monto" step="0.001">
             <small id="amount" class="form-text text-muted">Ingrese el monto.</small>
             @error('amount') <span class="text-red-500">{{ $message }}</span> @enderror
         </div>
