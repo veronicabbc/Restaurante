@@ -13,12 +13,7 @@ return [
     |
     */
 
-    'previous' => "<i class='fas fa-angle-left'></i>",
-    'next' => "<i class='fas fa-angle-right'></i>",
-    'showing' => 'Mostrando',
-    'to' => 'al',
-    'of' => 'de',
-    'results' => 'resultados',
-    
+    'previous' => '&laquo; Previous',
+    'next' => 'Next &raquo;',
 
 ];
